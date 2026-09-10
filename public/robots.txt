@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://portfolio-brandoon.vercel.app/sitemap.xml
+Sitemap: https://portfolio-nu-inky-57.vercel.app/sitemap.xml

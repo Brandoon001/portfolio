@@ -1,5 +1,5 @@
 export const SITE_URL =
-  import.meta.env.VITE_SITE_URL ?? "https://portfolio-brandoon.vercel.app";
+  import.meta.env.VITE_SITE_URL ?? "https://portfolio-nu-inky-57.vercel.app";
 
 export const site = {
   name: "Brandoon Silva",
