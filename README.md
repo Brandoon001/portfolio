@@ -38,4 +38,4 @@ vercel.json             # headers de segurança + rewrite SPA + build/output
 - JSON-LD `Person` no `<head>`
 - `sitemap.xml`, `robots.txt`, `og.png` e `favicon.svg`
 - Headers via `vercel.json`: CSP, `Referrer-Policy`, `nosniff`, `frame-ancestors none`
-- Links externos sempre com `rel="noopener noreferrer"`
+- Links externos sempre com `rel="noopener noreferrer"`# portfolio
