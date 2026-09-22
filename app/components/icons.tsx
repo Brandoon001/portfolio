@@ -1,3 +1,9 @@
+/*
+  Ícones em SVG dos canais sociais (GitHub e LinkedIn).
+  Usam fill="currentColor", então herdam a cor do texto onde são usados.
+  (Os demais ícones vêm da biblioteca lucide-react.)
+*/
+
 export function GithubIcon({ className }: { className?: string }) {
   return (
     <svg

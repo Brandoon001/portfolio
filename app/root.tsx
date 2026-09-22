@@ -1,4 +1,11 @@
+/*
+  Layout raiz de todas as páginas.
+  Aqui ficam: metadados globais, dados estruturados (SEO), provedor de tema
+  (claro/escuro) e a configuração de redução de movimento para as animações.
+*/
+
 import type { ReactNode } from "react";
+import { MotionConfig } from "framer-motion";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
@@ -8,6 +15,10 @@ import "@fontsource-variable/geist";
 import "@fontsource-variable/geist-mono";
 import "./app.css";
 
+/*
+  Dados estruturados (schema.org) para SEO: descrevem a "Person" para o
+  Google, melhorando o perfil do autor nos resultados de busca.
+*/
 const personJsonLd = {
   "@context": "https://schema.org",
   "@type": "Person",
@@ -35,7 +46,8 @@ export function Layout({ children }: { children: ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#4f46e5" />
+        {/* Cor usada pelo navegador na barra de endereço (mobile) — azul da identidade */}
+        <meta name="theme-color" content="#2563eb" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <Meta />
         <Links />
@@ -44,16 +56,29 @@ export function Layout({ children }: { children: ReactNode }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
         />
       </head>
-      <body className="flex min-h-full flex-col bg-background text-foreground">
+      <body className="flex min-h-full flex-col overflow-x-clip bg-background text-foreground">
+        {/*
+          ThemeProvider: gerencia tema claro/escuro/sistema e aplica a classe
+          .dark na <html> automaticamente.
+          disableTransitionOnChange evita "piscadas" ao trocar de tema.
+        */}
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          {/*
+            MotionConfig reducedMotion="user": instrui o framer-motion a NÃO
+            animar transformações (movimento) para quem prefere menos movimento,
+            mantendo apenas as transições de opacidade.
+          */}
+          <MotionConfig reducedMotion="user">
+            <Navbar />
+            {/* Outlet renderiza a página de cada rota */}
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </MotionConfig>
         </ThemeProvider>
         <ScrollRestoration />
         <Scripts />

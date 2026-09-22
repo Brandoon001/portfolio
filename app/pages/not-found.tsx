@@ -1,3 +1,8 @@
+/*
+  Rota fallback (*): retorna os metadados de SEO da página 404
+  e renderiza o componente visual NotFound.
+*/
+
 import type { MetaFunction } from "react-router";
 import { NotFound } from "../components/NotFound";
 

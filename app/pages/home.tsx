@@ -1,3 +1,8 @@
+/*
+  Página inicial: compõe as seções na ordem de navegação.
+  Ocupe-se dos metadados de SEO (title, description, Open Graph/Twitter).
+*/
+
 import type { MetaFunction } from "react-router";
 import { Hero } from "../components/Hero";
 import { Sobre } from "../components/Sobre";

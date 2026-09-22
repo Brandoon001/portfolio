@@ -1,3 +1,12 @@
+/*
+  Dados dos projetos exibidos no portfólio.
+  Cada projeto tem:
+  - Informações para o card (title, tagline, stack, status...)
+  - Textos da página de detalhes (problem, solution, features)
+  - "gradient": par de cores [origem, destino] usadas no banner e nos detalhes
+    (cada projeto tem sua própria identidade de cor)
+*/
+
 export type Project = {
   slug: string;
   title: string;

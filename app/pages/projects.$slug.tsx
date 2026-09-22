@@ -1,3 +1,12 @@
+/*
+  Página de detalhes de um projeto (rota /projetos/:slug).
+
+  Animações: "reveal" encadeado conforme o usuário rola a página —
+  breadcrumb → título/cabeçalho → banner → visão geral → problema/solução →
+  funcionalidades → tecnologias → botões finais. O emoji do banner flutua
+  suavemente (loop contínuo).
+*/
+
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -8,11 +17,15 @@ import {
   Wand2,
 } from "lucide-react";
 import { Link, useParams, type MetaFunction } from "react-router";
+import { motion } from "framer-motion";
 import { GithubIcon } from "../components/icons";
 import { NotFound } from "../components/NotFound";
 import { projects, type Project } from "../data/projects";
+import { Reveal, cardVariants, staggerParent } from "../components/motion";
+import { ProjectCover } from "../components/ProjectCover";
 import { SITE_URL } from "../lib/site";
 
+/* Metadados de SEO por projeto (título, descrição, Open Graph) */
 export const meta: MetaFunction = ({ params }) => {
   const project = projects.find((p) => p.slug === params.slug);
 
@@ -38,12 +51,7 @@ export const meta: MetaFunction = ({ params }) => {
   ];
 };
 
-const emojiBySlug: Record<string, string> = {
-  fintrack: "💰",
-  "nlw-agents": "🤖",
-  "task-manager": "✅",
-};
-
+/* Linha de metadados do projeto (ano, status, papel, stack) */
 function ProjectMeta({ project }: { project: Project }) {
   const [from, to] = project.gradient;
   return (
@@ -60,6 +68,7 @@ function ProjectMeta({ project }: { project: Project }) {
         <UserRound className="size-4" strokeWidth={1.5} aria-hidden />
         {project.role}
       </span>
+      {/* Taglines com as cores do gradiente do projeto */}
       <span
         className="rounded-md px-2 py-0.5 text-xs font-semibold"
         style={{ color: from, backgroundColor: `${from}1a` }}
@@ -80,6 +89,7 @@ export default function ProjectPage() {
   const { slug } = useParams<{ slug: string }>();
   const project = projects.find((p) => p.slug === slug);
 
+  // Slug desconhecido → renderiza a página 404
   if (!project) {
     return <NotFound />;
   }
@@ -88,6 +98,8 @@ export default function ProjectPage() {
 
   return (
     <article className="mx-auto max-w-4xl px-6 py-14">
+      {/* Breadcrumb: volta para a seção de projetos */}
+      <Reveal>
         <Link
           to="/#projetos"
           className="inline-flex items-center gap-2 text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100"
@@ -95,7 +107,10 @@ export default function ProjectPage() {
           <ArrowLeft className="size-4" strokeWidth={1.5} aria-hidden />
           Voltar para projetos
         </Link>
+      </Reveal>
 
+      {/* Cabeçalho: título, tagline e metadados */}
+      <Reveal delay={0.05}>
         <header className="mt-8">
           <h1 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50">
             {project.title}
@@ -107,25 +122,36 @@ export default function ProjectPage() {
             <ProjectMeta project={project} />
           </div>
         </header>
+      </Reveal>
 
+      {/* Banner: fundo em gradiente com as cores do projeto + emoji flutuando */}
+      <Reveal
+        delay={0.1}
+        y={24}
+        className="relative mt-10 flex aspect-[16/7] items-center justify-center overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800"
+      >
+        {/* Gradiente linear de fundo */}
         <div
-          className="relative mt-10 flex aspect-[16/7] items-center justify-center overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800"
+          aria-hidden
+          className="absolute inset-0"
           style={{
             background: `linear-gradient(135deg, ${from}1a, ${to}26)`,
           }}
-        >
-          <div
-            aria-hidden
-            className="absolute inset-0"
-            style={{
-              background: `radial-gradient(circle at 25% 30%, ${from}40, transparent 55%), radial-gradient(circle at 75% 70%, ${to}40, transparent 55%)`,
-            }}
-          />
-          <span className="relative text-7xl drop-shadow-md" aria-hidden>
-            {emojiBySlug[project.slug] ?? "📦"}
-          </span>
-        </div>
+        />
+        {/* Brilhos radiais decorativos */}
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background: `radial-gradient(circle at 25% 30%, ${from}40, transparent 55%), radial-gradient(circle at 75% 70%, ${to}40, transparent 55%)`,
+          }}
+        />
+        {/* Mockup da interface em tamanho grande, levitando suavemente */}
+        <ProjectCover project={project} variant="banner" animateFloat />
+      </Reveal>
 
+      {/* Visão geral do projeto */}
+      <Reveal delay={0.05}>
         <div className="mt-8">
           <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
             Visão geral
@@ -134,57 +160,89 @@ export default function ProjectPage() {
             {project.description}
           </p>
         </div>
+      </Reveal>
 
-        <section className="mt-10 grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <div className="inline-flex items-center gap-2 text-rose-500">
-              <Sparkles className="size-4" strokeWidth={1.5} aria-hidden />
-            </div>
-            <h3 className="mt-3 font-semibold text-zinc-900 dark:text-zinc-50">
-              O problema
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-              {project.problem}
-            </p>
+      {/*
+        Dois cards lado a lado (problema/solução) que entram em cascata
+        ao rolar até eles.
+      */}
+      <motion.section
+        variants={staggerParent}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-80px" }}
+        className="mt-10 grid gap-6 md:grid-cols-2"
+      >
+        <motion.div
+          variants={cardVariants}
+          className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900"
+        >
+          <div className="inline-flex items-center gap-2 text-rose-500">
+            <Sparkles className="size-4" strokeWidth={1.5} aria-hidden />
           </div>
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <div className="inline-flex items-center gap-2 text-emerald-500">
-              <Wand2 className="size-4" strokeWidth={1.5} aria-hidden />
-            </div>
-            <h3 className="mt-3 font-semibold text-zinc-900 dark:text-zinc-50">
-              A solução
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-              {project.solution}
-            </p>
+          <h3 className="mt-3 font-semibold text-zinc-900 dark:text-zinc-50">
+            O problema
+          </h3>
+          <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+            {project.problem}
+          </p>
+        </motion.div>
+        <motion.div
+          variants={cardVariants}
+          className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900"
+        >
+          <div className="inline-flex items-center gap-2 text-emerald-500">
+            <Wand2 className="size-4" strokeWidth={1.5} aria-hidden />
           </div>
-        </section>
+          <h3 className="mt-3 font-semibold text-zinc-900 dark:text-zinc-50">
+            A solução
+          </h3>
+          <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+            {project.solution}
+          </p>
+        </motion.div>
+      </motion.section>
 
-        <section className="mt-10">
+      {/* Lista de funcionalidades, com cada item entrando em cascata */}
+      <section className="mt-10">
+        <Reveal>
           <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
             Funcionalidades
           </h2>
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {project.features.map((feature) => (
-              <li
-                key={feature}
-                className="flex items-center gap-2.5 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300"
-              >
-                <span
-                  className="size-2 shrink-0 rounded-full"
-                  style={{ background: to }}
-                  aria-hidden
-                />
-                {feature}
-              </li>
-            ))}
-          </ul>
-        </section>
+        </Reveal>
+        <motion.ul
+          variants={staggerParent}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-80px" }}
+          className="mt-4 grid gap-3 sm:grid-cols-2"
+        >
+          {project.features.map((feature) => (
+            <motion.li
+              key={feature}
+              variants={cardVariants}
+              className="flex items-center gap-2.5 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300"
+            >
+              {/* Pontinho colorido com a cor secundária do projeto */}
+              <span
+                className="size-2 shrink-0 rounded-full"
+                style={{ background: to }}
+                aria-hidden
+              />
+              {feature}
+            </motion.li>
+          ))}
+        </motion.ul>
+      </section>
 
-        <section className="mt-10">
+      {/* Tags da stack utilizada */}
+      <section className="mt-10">
+        <Reveal>
           <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
             Tecnologias
           </h2>
+        </Reveal>
+        <Reveal delay={0.1}>
           <ul className="mt-4 flex flex-wrap gap-2">
             {project.stack.map((tech) => (
               <li
@@ -195,8 +253,11 @@ export default function ProjectPage() {
               </li>
             ))}
           </ul>
-        </section>
+        </Reveal>
+      </section>
 
+      {/* Ações finais: código no GitHub + volta para os projetos */}
+      <Reveal delay={0.05}>
         <div className="mt-12 flex flex-wrap items-center gap-3 border-t border-zinc-200 pt-8 dark:border-zinc-800">
           <a
             href={project.github}
@@ -215,6 +276,7 @@ export default function ProjectPage() {
             Ver outros projetos
           </Link>
         </div>
-      </article>
+      </Reveal>
+    </article>
   );
 }
