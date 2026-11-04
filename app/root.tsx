@@ -42,12 +42,15 @@ const personJsonLd = {
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
-    <html lang="pt-BR" className="h-full antialiased">
+    <html lang="pt-BR" className="h-full antialiased" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* Cor usada pelo navegador na barra de endereço (mobile) — azul da identidade */}
-        <meta name="theme-color" content="#2563eb" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f6f2" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#08080a" />
+        <meta name="author" content={site.name} />
+        <link rel="preconnect" href="https://avatars.githubusercontent.com" crossOrigin="anonymous" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <Meta />
         <Links />

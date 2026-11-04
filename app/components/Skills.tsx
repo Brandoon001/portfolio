@@ -1,108 +1,118 @@
-/*
-  Skills: seção (id "skills") com as tecnologias organizadas por categoria.
-
-  Animações:
-  - Cabeçalho entra com Reveal ao rolar.
-  - Cards entram em "cascata" (staggerParent no grid + cardVariants em cada card).
-  - Hover: o card "levita" 5px (whileHover) e o ícone da categoria gira/amplia
-    levemente (efeito CSS via group-hover).
-*/
-
 import {
-  MonitorSmartphone,
-  Server,
   Database,
   GraduationCap,
+  MonitorSmartphone,
+  Server,
+  Sparkles,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Reveal, staggerParent, cardVariants } from "./motion";
+import { SectionHeading } from "./SectionHeading";
+import { getTechMeta } from "../data/tech";
 
-/* Categorias de habilidades: cada uma com seu ícone e cor de destaque */
 const categories = [
   {
     title: "Front-end",
+    description: "Interfaces rápidas, acessíveis e responsivas.",
     icon: MonitorSmartphone,
-    color: "text-blue-600 dark:text-blue-400",
+    gradient: "from-blue-500 to-cyan-500",
     items: ["JavaScript", "HTML", "CSS", "React", "TypeScript"],
   },
   {
     title: "Back-end",
+    description: "Regras de negócio, APIs e integrações.",
     icon: Server,
-    color: "text-violet-600 dark:text-violet-400",
-    items: ["Java", "Node.js", "APIs REST"],
+    gradient: "from-violet-500 to-fuchsia-500",
+    items: ["Java", "Node.js", "APIs REST", "POO"],
   },
   {
     title: "Banco de Dados",
+    description: "Estrutura, modelagem e persistência.",
     icon: Database,
-    color: "text-cyan-600 dark:text-cyan-400",
+    gradient: "from-cyan-500 to-teal-500",
     items: ["MySQL", "Modelagem", "Relacionamentos"],
   },
 ];
 
 export function Skills() {
   return (
-    <section id="skills" className="border-y border-zinc-200 bg-zinc-100/60 py-24 dark:border-zinc-800/60 dark:bg-zinc-900/40">
+    <section
+      id="skills"
+      className="relative isolate border-y border-border bg-surface/30 py-24 sm:py-28"
+    >
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute left-1/2 top-0 size-[36rem] -translate-x-1/2 rounded-full bg-gradient-to-tr from-blue-500/10 via-violet-500/10 to-transparent blur-3xl" />
+      </div>
+
       <div className="mx-auto max-w-6xl px-6">
-        {/* Cabeçalho da seção, com reveal ao entrar na tela */}
         <Reveal>
-          <div className="mx-auto max-w-2xl text-center">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-zinc-50 px-3 py-1 text-sm font-medium text-zinc-700 dark:bg-zinc-900 dark:text-zinc-200">
-              <GraduationCap className="size-3.5" aria-hidden />
-              Skills
-            </div>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-              Tecnologias que eu uso
-            </h2>
-            <p className="mt-3 text-zinc-600 dark:text-zinc-400">
-              Ferramentas que domino hoje e as que estou estudando para evoluir
-              como desenvolvedor full stack.
-            </p>
-          </div>
+          <SectionHeading
+            eyebrow="Skills"
+            icon={GraduationCap}
+            title="Tecnologias que eu uso"
+            description="Ferramentas que domino hoje e as que estou estudando para evoluir como desenvolvedor full stack."
+          />
         </Reveal>
 
-        {/*
-          Grade de cards:
-          - staggerParent coordena a entrada em cascata dos filhos.
-          - whileInView dispara quando a grade entra na tela (uma única vez).
-        */}
         <motion.div
           variants={staggerParent}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-80px" }}
-          className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
         >
-          {categories.map((category) => (
+          {categories.map((category, index) => (
             <motion.article
               key={category.title}
               variants={cardVariants}
               whileHover={{ y: -5 }}
               transition={{ type: "spring", stiffness: 300, damping: 22 }}
-              className="group rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+              className="group rounded-2xl border border-border bg-surface p-6 shadow-sm transition-shadow hover:shadow-xl hover:shadow-black/5"
             >
-              {/* Ícone da categoria: gira/amplia sutilmente ao passar o mouse no card */}
-              <div
-                className={`inline-flex size-10 items-center justify-center rounded-lg bg-zinc-100 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110 dark:bg-zinc-800 ${category.color}`}
-              >
-                <category.icon className="size-5" strokeWidth={1.5} aria-hidden />
+              <div className="flex items-start justify-between">
+                <span
+                  className={`inline-flex size-11 items-center justify-center rounded-xl bg-gradient-to-tr ${category.gradient} text-white shadow-lg shadow-black/10 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105`}
+                >
+                  <category.icon className="size-5" strokeWidth={1.75} aria-hidden />
+                </span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
               </div>
-              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+
+              <h3 className="mt-5 text-lg font-semibold text-foreground">
                 {category.title}
               </h3>
-              {/* Tags/tecnologias da categoria */}
-              <ul className="mt-3 flex flex-wrap gap-2">
-                {category.items.map((item) => (
-                  <li
-                    key={item}
-                    className="rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-sm text-zinc-700 dark:border-zinc-800 dark:bg-zinc-800/40 dark:text-zinc-300"
-                  >
-                    {item}
-                  </li>
-                ))}
+              <p className="mt-1.5 text-sm text-muted">{category.description}</p>
+
+              <ul className="mt-5 space-y-2">
+                {category.items.map((item) => {
+                  const meta = getTechMeta(item);
+                  return (
+                    <li
+                      key={item}
+                      className="flex items-center gap-2.5 rounded-lg border border-border/70 bg-background/50 px-3 py-2 text-sm text-foreground/85 transition-colors group-hover:border-border"
+                    >
+                      <span
+                        aria-hidden
+                        className="size-1.5 rounded-full"
+                        style={{ backgroundColor: meta.color }}
+                      />
+                      {item}
+                    </li>
+                  );
+                })}
               </ul>
             </motion.article>
           ))}
         </motion.div>
+
+        <Reveal delay={0.1}>
+          <p className="mt-8 flex items-center justify-center gap-2 text-center text-sm text-muted">
+            <Sparkles className="size-4 text-primary" aria-hidden />
+            Sempre estudando — foco atual em TypeScript, Node.js e boas práticas.
+          </p>
+        </Reveal>
       </div>
     </section>
   );

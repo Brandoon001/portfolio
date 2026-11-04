@@ -1,31 +1,50 @@
-/*
-  NotFound: estado visual da página 404.
-  Usado tanto na rota de fallback quanto quando um slug de projeto não existe.
-*/
-
 import { Link } from "react-router";
-import { FileQuestion, Home } from "lucide-react";
+import { ArrowLeft, FileQuestion, Home } from "lucide-react";
 
 export function NotFound() {
   return (
-    <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center px-6 text-center">
-      {/* Ícone central com a cor de identidade (azul) */}
-      <div className="inline-flex size-16 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
-        <FileQuestion className="size-8" strokeWidth={1.5} aria-hidden />
+    <div className="relative isolate mx-auto flex min-h-[70vh] max-w-2xl flex-col items-center justify-center px-6 py-20 text-center">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-60"
+        style={{
+          maskImage:
+            "radial-gradient(ellipse 60% 50% at 50% 50%, #000 10%, transparent 75%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 60% 50% at 50% 50%, #000 10%, transparent 75%)",
+        }}
+      />
+
+      <div className="inline-flex size-16 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-violet-600 text-white shadow-xl shadow-violet-600/20">
+        <FileQuestion className="size-7" strokeWidth={1.75} aria-hidden />
       </div>
-      <h1 className="mt-6 text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-        404
+      <span className="mt-6 font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-muted">
+        Erro 404
+      </span>
+      <h1 className="mt-2 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+        Página não encontrada
       </h1>
-      <p className="mt-3 text-zinc-600 dark:text-zinc-400">
-        A página que você está procurando não existe ou foi movida.
+      <p className="mt-3 max-w-md leading-relaxed text-muted">
+        A página que você está procurando não existe ou foi movida para outro
+        endereço.
       </p>
-      <Link
-        to="/"
-        className="mt-8 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-500"
-      >
-        <Home className="size-4" strokeWidth={1.5} aria-hidden />
-        Voltar para a página inicial
-      </Link>
+
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <Link
+          to="/"
+          className="inline-flex h-11 items-center gap-2 rounded-xl bg-foreground px-5 text-sm font-semibold text-background shadow-lg shadow-foreground/10 transition hover:-translate-y-0.5 active:translate-y-0"
+        >
+          <Home className="size-4" strokeWidth={1.75} aria-hidden />
+          Voltar ao início
+        </Link>
+        <Link
+          to="/#projetos"
+          className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-surface px-5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-surface-muted active:translate-y-0"
+        >
+          <ArrowLeft className="size-4" strokeWidth={1.75} aria-hidden />
+          Ver projetos
+        </Link>
+      </div>
     </div>
   );
 }

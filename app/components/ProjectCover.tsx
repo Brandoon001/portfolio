@@ -248,7 +248,11 @@ export function ProjectCover({
   }
 
   /* Ponteiro de eventos desativado: o mockup é decorativo */
-  const inner = <div className="pointer-events-none select-none">{content}</div>;
+  const inner = (
+    <div aria-hidden className="pointer-events-none select-none">
+      {content}
+    </div>
+  );
 
   // No banner, o mockup "levita" em loop contínuo (movimento sutil)
   if (animateFloat) {

@@ -1,177 +1,235 @@
-/*
-  Hero: primeira seção (id "inicio").
-  Contém a apresentação, os botões de ação e o avatar, com:
-  - Entrada em cascata dos textos (framer-motion, via container/items).
-  - Glow de fundo e avatar com animações contínuas sutis (float).
-  - Micro-interação de hover nos botões (elevar 2px).
-*/
-
-import { Link } from "react-router";
 import { motion, type Variants } from "framer-motion";
-import { ArrowDown, Mail, Sparkles } from "lucide-react";
-import { GithubIcon } from "./icons";
+import { ArrowDown, Mail } from "lucide-react";
+import { GithubIcon, LinkedinIcon } from "./icons";
+import { StackMarquee } from "./StackMarquee";
+import { getTechMeta } from "../data/tech";
+import { projects } from "../data/projects";
 import { site } from "../lib/site";
 
-/* Variante do CONTÊINER: anima os filhos em cascata (stagger 0.12s) */
 const container: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.12, delayChildren: 0.1 },
+    transition: { staggerChildren: 0.1, delayChildren: 0.05 },
   },
 };
 
-/* Variante de cada ITEM: sobe 24px até a posição final com fade */
 const item: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  hidden: { opacity: 0, y: 22 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+  },
 };
+
+const techCount = new Set(projects.flatMap((project) => project.stack)).size;
+
+const floatingTech = [
+  { name: "Java", position: "left-0 top-4", delay: 0 },
+  { name: "React", position: "right-0 top-24", delay: 0.6 },
+  { name: "Node.js", position: "bottom-20 left-0", delay: 1.2 },
+  { name: "MySQL", position: "bottom-4 right-2", delay: 1.8 },
+];
+
+const stats = [
+  { value: String(projects.length).padStart(2, "0"), label: "Projetos" },
+  { value: String(techCount).padStart(2, "0"), label: "Tecnologias" },
+  { value: "Full", label: "Stack" },
+];
 
 export function Hero() {
   return (
-    <section id="inicio" className="relative overflow-hidden">
-      {/*
-        Glow decorativo: um "bola" de luz azul→violeta bem desfocada atrás
-        do texto. Anima continuamente (y sobe/desce e scale pulsa) em ~14s —
-        movimento quase imperceptível, só para dar vida ao fundo.
-      */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-40 -z-10 flex justify-center"
-      >
-        <motion.div
-          animate={{ y: [0, -24, 0], scale: [1, 1.06, 1] }}
-          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-          className="size-[500px] rounded-full bg-gradient-to-tr from-blue-500/20 to-violet-500/20 blur-3xl"
+    <section id="inicio" className="relative isolate overflow-hidden">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <div
+          className="absolute inset-0 bg-grid"
+          style={{
+            maskImage:
+              "radial-gradient(ellipse 68% 55% at 50% 0%, #000 20%, transparent 78%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 68% 55% at 50% 0%, #000 20%, transparent 78%)",
+          }}
         />
+        <motion.div
+          animate={{ y: [0, -20, 0], scale: [1, 1.05, 1] }}
+          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute left-1/2 top-[-14rem] size-[44rem] -translate-x-1/2 rounded-full bg-gradient-to-tr from-blue-500/25 via-violet-500/20 to-fuchsia-500/10 blur-3xl"
+        />
+        <div className="absolute -left-48 top-52 size-96 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div className="absolute -right-48 bottom-10 size-96 rounded-full bg-fuchsia-500/10 blur-3xl" />
+        <div className="absolute inset-0 bg-noise opacity-[0.025]" />
       </div>
 
-      <div className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl items-center gap-12 px-6 py-20 md:grid-cols-[1.1fr_0.9fr]">
-        {/* Coluna de texto com entrada em cascata */}
+      <div className="mx-auto grid max-w-6xl items-center gap-16 px-6 pb-16 pt-14 sm:pt-16 lg:min-h-[calc(100svh-4rem)] lg:grid-cols-[1.08fr_0.92fr] lg:gap-10 lg:py-20">
         <motion.div
           variants={container}
           initial="hidden"
           animate="show"
-          className="max-w-xl"
+          className="max-w-2xl"
         >
-          {/* Badge "Disponível": o ícone Sparkles pulsa suavemente */}
-          <motion.p
-            variants={item}
-            className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-300"
-          >
-            <motion.span
-              animate={{ opacity: [0.5, 1, 0.5], scale: [0.95, 1.05, 0.95] }}
-              transition={{
-                duration: 2.4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="inline-flex"
-              aria-hidden
-            >
-              <Sparkles className="size-3.5" />
-            </motion.span>
-            Disponível para novas oportunidades
-          </motion.p>
+          <motion.div variants={item}>
+            <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+              <span className="relative flex size-2" aria-hidden>
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+              </span>
+              Disponível para novas oportunidades
+            </span>
+          </motion.div>
 
-          {/* Título com o nome em gradiente azul → violeta (identidade) */}
           <motion.h1
             variants={item}
-            className="mt-6 text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl dark:text-zinc-50"
+            className="mt-6 text-[clamp(2.9rem,8vw,4.9rem)] font-semibold leading-[0.96] tracking-[-0.045em] text-foreground"
           >
-            Olá, eu sou{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-violet-400">
-              Brandoon Silva
-            </span>
+            Brandoon <span className="text-gradient">Silva</span>
+            <span className="text-primary">.</span>
           </motion.h1>
 
           <motion.p
             variants={item}
-            className="mt-4 text-lg font-medium text-zinc-700 dark:text-zinc-300"
+            className="mt-5 font-mono text-[11px] font-medium uppercase tracking-[0.26em] text-primary sm:text-xs"
           >
-            {site.role} com foco em Java e JavaScript, construindo aplicações
-            completas.
+            Desenvolvedor Full Stack
           </motion.p>
 
           <motion.p
             variants={item}
-            className="mt-3 text-zinc-600 dark:text-zinc-400"
+            className="mt-5 max-w-xl text-lg leading-relaxed text-muted"
           >
-            Transformo ideias em produtos — do banco de dados à interface.
+            Construo aplicações web completas — do banco de dados à interface.
+            Foco em{" "}
+            <span className="font-medium text-foreground">
+              Java, JavaScript e React
+            </span>
+            , com código limpo e atenção à experiência de quem usa.
           </motion.p>
 
-          {/* Botões de ação: elevam 2px no hover (transform + transition) */}
           <motion.div
             variants={item}
             className="mt-8 flex flex-wrap items-center gap-3"
           >
-            <Link
-              to="#projetos"
-              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-blue-500 active:translate-y-0"
+            <a
+              href="#projetos"
+              className="group inline-flex h-11 items-center gap-2 rounded-xl bg-foreground px-5 text-sm font-semibold text-background shadow-lg shadow-foreground/10 transition hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0"
             >
               Ver projetos
-              <ArrowDown className="size-4" strokeWidth={1.5} aria-hidden />
-            </Link>
-            <a
-              href={site.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 px-5 py-2.5 text-sm font-medium text-zinc-700 transition hover:-translate-y-0.5 hover:bg-zinc-100 active:translate-y-0 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800/60"
-            >
-              <GithubIcon className="size-4" />
-              GitHub
+              <ArrowDown
+                className="size-4 transition-transform group-hover:translate-y-0.5"
+                strokeWidth={2}
+                aria-hidden
+              />
             </a>
             <a
               href={`mailto:${site.email}`}
-              className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 px-5 py-2.5 text-sm font-medium text-zinc-700 transition hover:-translate-y-0.5 hover:bg-zinc-100 active:translate-y-0 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800/60"
+              className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-surface px-5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:border-foreground/25 hover:bg-surface-muted active:translate-y-0"
             >
-              <Mail className="size-4" strokeWidth={1.5} aria-hidden />
-              Contato
+              <Mail className="size-4" strokeWidth={1.75} aria-hidden />
+              Fale comigo
             </a>
+            <div className="flex items-center gap-1.5">
+              <a
+                href={site.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub de Brandoon Silva (abre em nova aba)"
+                className="inline-flex size-11 items-center justify-center rounded-xl border border-border bg-surface text-muted transition hover:-translate-y-0.5 hover:border-foreground/25 hover:text-foreground"
+              >
+                <GithubIcon className="size-4" />
+              </a>
+              <a
+                href={site.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn de Brandoon Silva (abre em nova aba)"
+                className="inline-flex size-11 items-center justify-center rounded-xl border border-border bg-surface text-muted transition hover:-translate-y-0.5 hover:border-foreground/25 hover:text-foreground"
+              >
+                <LinkedinIcon className="size-4" />
+              </a>
+            </div>
           </motion.div>
+
+          <motion.dl
+            variants={item}
+            className="mt-10 grid max-w-md grid-cols-3 divide-x divide-border overflow-hidden rounded-2xl border border-border bg-surface/60 backdrop-blur"
+          >
+            {stats.map((stat) => (
+              <div key={stat.label} className="px-4 py-3.5">
+                <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+                  {stat.label}
+                </dt>
+                <dd className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
+                  {stat.value}
+                </dd>
+              </div>
+            ))}
+          </motion.dl>
         </motion.div>
 
-        {/*
-          Coluna do avatar.
-          - Halo: anel gradiente desfocado que pulsa (scale/opacidade).
-          - Foto: levita 8px de forma contínua (float sutil).
-        */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
-          className="flex justify-center"
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="relative mx-auto w-full max-w-md"
         >
-          <div className="relative">
+          <div className="relative mx-auto aspect-square w-64 sm:w-80">
             <motion.div
               aria-hidden
-              animate={{
-                scale: [1, 1.08, 1],
-                opacity: [0.55, 0.8, 0.55],
-              }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -inset-3 rounded-full bg-gradient-to-tr from-blue-600 to-violet-600 opacity-60 blur-xl"
+              animate={{ scale: [1, 1.07, 1], opacity: [0.55, 0.8, 0.55] }}
+              transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -inset-6 rounded-full bg-gradient-to-tr from-blue-600 via-violet-600 to-fuchsia-500 opacity-50 blur-2xl"
             />
             <motion.div
               animate={{ y: [0, -8, 0] }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 0.5,
-              }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-600 via-violet-600 to-fuchsia-500 p-[2px] shadow-2xl"
             >
               <img
                 src={site.avatar}
                 alt={`Foto de perfil de ${site.name}`}
-                width={280}
-                height={280}
-                className="relative size-56 rounded-full border-4 border-white object-cover shadow-2xl dark:border-zinc-900 sm:size-72"
+                width={320}
+                height={320}
+                loading="eager"
+                fetchPriority="high"
+                className="size-full rounded-full border-4 border-background object-cover"
               />
             </motion.div>
           </div>
+
+          {floatingTech.map((tech) => {
+            const meta = getTechMeta(tech.name);
+            return (
+              <motion.div
+                key={tech.name}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1, y: [0, -7, 0] }}
+                transition={{
+                  opacity: { duration: 0.4, delay: 0.6 + tech.delay },
+                  scale: { duration: 0.4, delay: 0.6 + tech.delay },
+                  y: {
+                    duration: 5 + tech.delay,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: tech.delay,
+                  },
+                }}
+                className={`absolute ${tech.position}`}
+              >
+                <span className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface/90 px-3 py-2 text-xs font-medium text-foreground shadow-lg shadow-black/5 backdrop-blur">
+                  <span
+                    aria-hidden
+                    className="size-1.5 rounded-full"
+                    style={{ backgroundColor: meta.color }}
+                  />
+                  {tech.name}
+                </span>
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
+
+      <StackMarquee />
     </section>
   );
 }
